@@ -1,0 +1,62 @@
+#!/usr/bin/env python
+
+# Trigger a new Travis-CI job.
+# A Python variant of trigger-travis.sh that supports passing variables.
+# See that bash script for the basics behind what's happening.
+#
+# Here we add the ability to pass variables to the dependent project
+# and move from bash to a much richer scripting environment (ie. Python).
+# Add variables using '--vars' where VARS is a comma-separated list of
+# variable names and values, e.g. "A=B,C=D"
+#
+# Usage:
+#   trigger-travis.py
+#       [--pro]
+#       [--branch BRANCH]
+#       [--vars VARS]
+#       GITHUBID
+#       GITHUBPROJECT
+#       TRAVIS_ACCESS_TOKEN
+#       [MESSAGE]
+
+import argparse
+
+import requests
+
+# Build a command-line parser
+# and parse the command-line...
+PARSER = argparse.ArgumentParser(description='Trigger Travis')
+PARSER.add_argument('--pro', action="store_true", default=False)
+PARSER.add_argument('--branch', type=str, default='master')
+PARSER.add_argument('--vars', type=str)
+PARSER.add_argument('namespace', type=str)
+PARSER.add_argument('project', type=str)
+PARSER.add_argument('token', type=str)
+PARSER.add_argument('message', nargs='?')
+ARGS = PARSER.parse_args()
+
+# Any variables to process?
+# if so, split the comma-separated list into a simple list
+VARS = ARGS.vars.split(',') if ARGS.vars else []
+# A user message?
+MESSAGE = ARGS.message if ARGS.message else ''
+# Travis com or org?
+TRAVIS_URL = 'travis-ci.com' if ARGS.pro else 'travis-ci.org'
+
+# Construct the payload
+# Headers and URL
+DATA = {'request': {'branch': ARGS.branch,
+                    'message': MESSAGE,
+                    'config': {'merge_mode': 'deep_merge_append'}}}
+HEADERS = {'Content-Type': 'application/json',
+           'Accept': 'application/json',
+           'Travis-API-Version': '3',
+           'Authorization': 'token {}'.format(ARGS.token)}
+URL = 'https://api.{}/repo/{}%2F{}/requests'.format(TRAVIS_URL,
+                                                    ARGS.namespace,
+                                                    ARGS.project)
+
+# Trigger...
+response = requests.post(URL, headers=HEADERS, json=DATA, timeout=4.0)
+print(response)
+print(response.text)
