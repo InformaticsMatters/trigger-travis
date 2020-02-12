@@ -36,8 +36,13 @@ PARSER.add_argument('message', nargs='?')
 ARGS = PARSER.parse_args()
 
 # Any variables to process?
-# if so, split the comma-separated list into a simple list
-VARS = ARGS.vars.split(',') if ARGS.vars else []
+# True if the length of '--vars' is greater than 2
+# i.e. we have "A=1". "-" is passed in by some scripts
+# to imply none.
+# If there are arguments, split the comma-separated list into a simple list
+VARS = []
+if ARGS.vars and len(ARGS.vars) > 2:
+    VARS = ARGS.vars.split(',')
 # A user message?
 MESSAGE = ARGS.message if ARGS.message else ''
 # Travis com or org?
@@ -47,7 +52,8 @@ TRAVIS_URL = 'travis-ci.com' if ARGS.pro else 'travis-ci.org'
 # Headers and URL
 DATA = {'request': {'branch': ARGS.branch,
                     'message': MESSAGE,
-                    'config': {'merge_mode': 'deep_merge_append'}}}
+                    'config': {'merge_mode': 'deep_merge_append',
+                               'env': {'jobs': VARS}}}}
 HEADERS = {'Content-Type': 'application/json',
            'Accept': 'application/json',
            'Travis-API-Version': '3',
