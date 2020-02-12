@@ -20,7 +20,7 @@
 #       [MESSAGE]
 
 import argparse
-
+import os
 import requests
 
 # Build a command-line parser
@@ -35,16 +35,23 @@ PARSER.add_argument('token', type=str)
 PARSER.add_argument('message', nargs='?')
 ARGS = PARSER.parse_args()
 
+# This repo?
+TRAVIS_REPO_SLUG = os.environ.get('TRAVIS_REPO_SLUG')
+
 # Any variables to process?
 # True if the length of '--vars' is greater than 2
-# i.e. we have "A=1". "-" is passed in by some scripts
-# to imply none.
+# i.e. we have "A=1". "-" is passed in by some scripts to imply none.
 # If there are arguments, split the comma-separated list into a simple list
 VARS = []
 if ARGS.vars and len(ARGS.vars) > 2:
     VARS = ARGS.vars.split(',')
 # A user message?
-MESSAGE = ARGS.message if ARGS.message else ''
+# If not then supply a basic one,
+# so the downstream repo logs why it was triggered.
+if ARGS.message:
+    MESSAGE = ARGS.message
+else:
+    MESSAGE = 'Triggered by upstream build of "{}"'.format(TRAVIS_REPO_SLUG)
 # Travis com or org?
 TRAVIS_URL = 'travis-ci.com' if ARGS.pro else 'travis-ci.org'
 
