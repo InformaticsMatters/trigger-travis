@@ -20,12 +20,12 @@ way to trigger a new Travis job.
 `MESSAGE` is a string that will be displayed by Travis's web interface.
 (For a commit push, Travis uses the commit message.)
 
-## Travis access token
+## Travis access token (.com)
+Follow instructions at https://docs.travis-ci.com/user/triggering-builds/
+in order to obtain your Travis access token, e.g.: -
 
-Your Travis access token is the text after "Your access token is " in
-the output of this compound command:
-
-    travis login && travis token
+    travis login --com
+    travis token --com
 
 If the `travis` program isn't installed, then install it using either of these two
 commands (whichever one works):
@@ -41,7 +41,6 @@ If you store it in in a file, make sure the file is not readable by others,
 for example by running:  chmod og-rwx ~/private/.travis-access-token
 
 ## Use in `.travis.yml`
-
 To make one Travis build (if successful) trigger a different Travis build, do two things:
 
 1.  Set an environment variable `TRAVIS_ACCESS_TOKEN` by navigating to
@@ -71,5 +70,4 @@ default to the current (upstream) repository, commit id, and one line of
 the commit message.
 
 ## Credits and alternatives
-
 A fork of https://github.com/plume-lib/trigger-travis
