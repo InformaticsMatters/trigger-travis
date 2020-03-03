@@ -70,6 +70,7 @@ URL = 'https://api.{}/repo/{}%2F{}/requests'.format(TRAVIS_URL,
                                                     ARGS.project)
 
 # Trigger...
+print(URL)
 response = requests.post(URL, headers=HEADERS, json=DATA, timeout=4.0)
 print(response)
 print(response.text)
