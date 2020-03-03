@@ -2,19 +2,13 @@
 
 This script triggers a new [Travis-CI](https://travis-ci.org/) job.
 Ordinarily, a new Travis job is triggered when a commit is pushed to a
-GitHub repository.  The `trigger-travis.sh` script provides a programmatic
+GitHub repository.  The `trigger-travis.py` script provides a programmatic
 way to trigger a new Travis job.
 
 ## Usage
 
-```
-trigger-travis.sh [--pro] [--branch BRANCH] GITHUBID GITHUBPROJECT TRAVIS_ACCESS_TOKEN [MESSAGE]
-```
-
-For example:
-```
-trigger-travis.sh typetools checker-framework `cat ~/private/.travis-access-token` "Trigger for testing"
-```
+    ./trigger-travis.py [--pro] [--branch BRANCH] [--vars VARS] \
+        GITHUBID GITHUBPROJECT TRAVIS_ACCESS_TOKEN [MESSAGE]
 
 `--pro` means to use `travis-ci.com` instead of `travis-ci.org`
 
@@ -30,16 +24,15 @@ trigger-travis.sh typetools checker-framework `cat ~/private/.travis-access-toke
 
 Your Travis access token is the text after "Your access token is " in
 the output of this compound command:
-```
-  travis login && travis token
-```
+
+    travis login && travis token
 
 If the `travis` program isn't installed, then install it using either of these two
 commands (whichever one works):
-```
-   gem install travis
-   sudo apt-get install ruby-dev && sudo gem install travis
-```
+
+    gem install travis
+    sudo apt-get install ruby-dev && sudo gem install travis
+
 *Don't* do `sudo apt-get install travis` which installs a trajectory analyzer.
 
 Note that the Travis access token output by `travis token` differs from the
@@ -51,47 +44,32 @@ for example by running:  chmod og-rwx ~/private/.travis-access-token
 
 To make one Travis build (if successful) trigger a different Travis build, do two things:
 
-1. Set an environment variable `TRAVIS_ACCESS_TOKEN` by navigating to
-  https://travis-ci.org/MYGITHUBID/MYGITHUBPROJECT/settings .
-The `TRAVIS_ACCESS_TOKEN` environment variable will be set when Travis runs
-the job, but it won't be visible to anyone browsing https://travis-ci.org/ .
+1.  Set an environment variable `TRAVIS_ACCESS_TOKEN` by navigating to
+    https://travis-ci.org/MYGITHUBID/MYGITHUBPROJECT/settings.
 
-2. Add the following to your `.travis.yml` file, where you replace
-OTHERGITHUB* by a specific downstream project, but you leave
-`$TRAVIS_ACCESS_TOKEN` as literal text:
+    The `TRAVIS_ACCESS_TOKEN` environment variable will be set when Travis runs
+    the job, but it won't be visible to anyone browsing https://travis-ci.org/ .
+
+2.  Add the following to your `.travis.yml` file, where you replace
+    *OTHERGITHUB* by a specific downstream project, but you leave
+    `$TRAVIS_ACCESS_TOKEN` as literal text:
 
 ```
 jobs:
   include:
     - stage: trigger downstream
       script: |
-        echo "TRAVIS_BRANCH=$TRAVIS_BRANCH TRAVIS_PULL_REQUEST=$TRAVIS_PULL_REQUEST"
         if [[ ($TRAVIS_BRANCH == master) &&
               ($TRAVIS_PULL_REQUEST == false) ]] ; then
-          curl -LO --retry 3 https://raw.githubusercontent.com/plume-lib/trigger-travis/master/trigger-travis.sh
-          sh trigger-travis.sh OTHERGITHUBID OTHERGITHUBPROJECT $TRAVIS_ACCESS_TOKEN
-        else
-	  echo "trigger-travis.sh did not run"
+          curl -LO --retry 3 https://raw.githubusercontent.com/InformaticsMatters/trigger-travis/master/trigger-travis.py
+          sh trigger-travis.py OTHERGITHUBID OTHERGITHUBPROJECT $TRAVIS_ACCESS_TOKEN
         fi
 ```
 
-You may omit the `echo` commands, which are just for debugging.
-
-You don't need to supply a MESSAGE argument to `trigger-travis.sh`; it will
+You don't need to supply a MESSAGE argument to `trigger-travis.py`; it will
 default to the current (upstream) repository, commit id, and one line of
 the commit message.
 
-
 ## Credits and alternatives
 
-Parts of this script were originally taken from
-http://docs.travis-ci.com/user/triggering-builds/ .
-
-An alternative to this script would be to install the Travis command-line
-client and then run:
-```
-travis restart -r OTHERGITHUBID/OTHERGITHUBPROJECT
-```
-
-However, using `travis restart` is undesirable because it restarts an old
-job, destroying its history.  This script starts a new job.
+A fork of https://github.com/plume-lib/trigger-travis
