@@ -7,7 +7,8 @@
 # Here we add the ability to pass variables to the dependent project
 # and move from bash to a much richer scripting environment (ie. Python).
 # Add variables using '--vars' where VARS is a comma-separated list of
-# variable names and values, e.g. "A=B,C=D"
+# variable names and values, e.g. "A=B,C=D". The variables will be added
+# to the travis evv/global list.
 #
 # Usage:
 #   trigger-travis.py
@@ -60,7 +61,7 @@ TRAVIS_URL = 'travis-ci.com' if ARGS.pro else 'travis-ci.org'
 DATA = {'request': {'branch': ARGS.branch,
                     'message': MESSAGE,
                     'config': {'merge_mode': 'deep_merge_append',
-                               'env': {'jobs': VARS}}}}
+                               'env': {'global': VARS}}}}
 HEADERS = {'Content-Type': 'application/json',
            'Accept': 'application/json',
            'Travis-API-Version': '3',
