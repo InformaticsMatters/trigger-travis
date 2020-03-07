@@ -24,14 +24,16 @@ way to trigger a new Travis job in a peer repository.
 Follow [triggering builds] instructions in order to obtain your Travis
 access token, e.g.: -
 
-    travis login --com
-    travis token --com
+    $ travis login --com
+    [...]
+    $ travis token --com
+    Your access token is ????????????????
 
 If the `travis` program isn't installed, then install it using either of these
 two commands (whichever one works):
 
-    gem install travis
-    sudo apt-get install ruby-dev && sudo gem install travis
+    $ gem install travis
+    $ sudo apt-get install ruby-dev && sudo gem install travis
 
 *Don't* do `sudo apt-get install travis` which installs a trajectory analyzer.
 
