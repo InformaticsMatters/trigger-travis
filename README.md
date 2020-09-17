@@ -1,5 +1,9 @@
 # trigger-travis
 
+![GitHub tag (latest SemVer)](https://img.shields.io/github/v/tag/informaticsmatters/trigger-travis)
+
+[![CodeFactor](https://www.codefactor.io/repository/github/informaticsmatters/trigger-travis/badge)](https://www.codefactor.io/repository/github/informaticsmatters/trigger-travis)
+
 This script triggers a new [Travis-CI] job.
 
 Ordinarily, a new Travis job is triggered when a commit is pushed to a
